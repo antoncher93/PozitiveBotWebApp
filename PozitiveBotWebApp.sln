@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PozitiveBotWebApp", "PozitiveBotWebApp\PozitiveBotWebApp.csproj", "{576D0457-6E53-4746-B6D5-1B9828EA06CC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{576D0457-6E53-4746-B6D5-1B9828EA06CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{576D0457-6E53-4746-B6D5-1B9828EA06CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{576D0457-6E53-4746-B6D5-1B9828EA06CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{576D0457-6E53-4746-B6D5-1B9828EA06CC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4D173702-B335-4EC4-919A-CDEEE656594C}
+	EndGlobalSection
+EndGlobal
