@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Pozitive.Entities.Enums;
 
-namespace PozitiveBotWebApp.Models
+namespace Pozitive.Entities
 {
-    public class User
+    public class Person
     {
         public int Id { get; set; }
         public long TelegramId { get; set; }

@@ -1,32 +1,34 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using PozitiveBotWebApp.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Linq;
+using Pozitive.Entities;
+using Pozitive.Entities.Enums;
+using Pozitive.Entities.Repos;
+using PozitiveBotWebApp;
+using PozitiveBotWebApp.Handlers.CallbackHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 
-namespace PozitiveBotWebApp.Handlers
+namespace Pozitive.Services.Handlers.CallbackHandlers
 {
-    public class RejectUserHandler : UpdateHandler
+    public class RejectUserHandler : CallbackHandler
     {
-        private readonly IConfiguration _configuration;
-        private readonly ApplicationContext _db;
+        private readonly IAdminService _adminService;
+        private readonly IRepository<Person> _persons;
+        public override string Data { get; } = Bot.REJECT_USER;
 
-        public RejectUserHandler(IConfiguration configuration, ApplicationContext db)
+        public override void Execute(ITelegramBotClient client, Update update)
         {
-            _configuration = configuration;
-            _db = db;
-        }
-        public override void Handle(ITelegramBotClient client, Update update)
-        {
-            if (!_Handle(client, update))
-                base.Handle(client, update);
+            var admin = update.CallbackQuery.From;
+            var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
+            var personId = int.Parse(mention);
+            var person = _persons.FirstOrDefault(p => Equals(personId, p.Id));
+            if(person is null)
+                return;
+
+            _adminService.DeclinePerson(admin, person.TelegramId);
         }
 
+        /*
         private bool _Handle(ITelegramBotClient client, Update update)
         {
             if (update.Type == UpdateType.CallbackQuery)
@@ -52,6 +54,6 @@ namespace PozitiveBotWebApp.Handlers
                 }
             }
             return false;
-        }
+        }*/
     }
 }

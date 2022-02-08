@@ -13,11 +13,17 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Telegram.Bot" Version="16.0.0" />
+    <PackageReference Include="Telegram.Bot" Version="17.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="App_Data\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Positive.SqlDbContext\Positive.SqlDbContext.csproj" />
+    <ProjectReference Include="..\Pozitive.Entities\Pozitive.Entities.csproj" />
+    <ProjectReference Include="..\Pozitive.Services\Pozitive.Services.csproj" />
   </ItemGroup>
 
 </Project>

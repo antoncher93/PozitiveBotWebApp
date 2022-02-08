@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using PozitiveBotWebApp.Models;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -12,13 +14,11 @@ namespace PozitiveBotWebApp.Controllers
     public class MessageController : Controller
     {
         private readonly ITelegramBotClient _client;
-        private readonly ApplicationContext _db;
 
-        public MessageController(ITelegramBotClient client, ApplicationContext appContext, IConfiguration configuration, ILogger<Bot> logger)
+        public MessageController(IServiceProvider serviceProvider)
         {
-            _client = client;
-            _db = appContext;
-            Bot.Configure(appContext, configuration, logger);
+            _client = serviceProvider.GetService<ITelegramBotClient>();
+            Bot.Configure(serviceProvider);
 
         }
 

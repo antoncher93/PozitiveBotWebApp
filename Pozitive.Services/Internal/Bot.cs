@@ -1,14 +1,12 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using PozitiveBotWebApp.Commands;
-using PozitiveBotWebApp.Handlers;
-using PozitiveBotWebApp.Handlers.AdminCommands;
-using PozitiveBotWebApp.Handlers.CallbackHandlers;
-using PozitiveBotWebApp.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
+using Pozitive.Entities;
+using Pozitive.Entities.Repos;
+using Pozitive.Services.Handlers;
+using Pozitive.Services.Handlers.CallbackHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -39,22 +37,17 @@ namespace PozitiveBotWebApp
 
         internal const long ROOT_ADMIN_ID = 816204353L;
 
-        private static ILogger<Bot> _logger;
-
-        public static IEnumerable<AdminCommandHandler> AdminCommandHandlers { get; private set; }
-
-        private static IEnumerable<BaseCommand> CommandList { get; set; }
-
-        public static void Configure(ApplicationContext appContext, IConfiguration configuration, ILogger<Bot> logger)
+        public static void Configure(IServiceProvider serviceProvider)
         {
-            _rootUpdateHandler = new StartUpdateHandler(appContext);
-            _rootUpdateHandler
-                .SetNext(new WantIntoChatCallbackHandler(appContext))
-                .SetNext(new ReloadAdminCommandHandler(appContext, configuration))
-                .SetNext(new ReloadChatUpdateHandler(configuration))
-                .SetNext(new PhotoHandler(appContext, configuration))
-                .SetNext(new ApproveCalbackHandler(configuration, appContext))
-                .SetNext(new RejectUserHandler(configuration, appContext));
+            var persons = serviceProvider.GetService<IRepository<Person>>();
+            _rootUpdateHandler = new StartUpdateHandler(persons);
+            //_rootUpdateHandler
+            //    .SetNext(new WantIntoChatCallbackHandler(appContext))
+            //    .SetNext(new ReloadAdminCommandHandler(appContext, configuration))
+            //    .SetNext(new ReloadChatUpdateHandler(configuration))
+            //    .SetNext(new PhotoHandler(appContext, configuration))
+            //    .SetNext(new ApproveCalbackHandler(configuration, appContext))
+            //    .SetNext(new RejectUserHandler(configuration, appContext));
         }
 
         public static void HandleUpdate(ITelegramBotClient client, Update update)
@@ -68,7 +61,7 @@ namespace PozitiveBotWebApp
             }
             catch (Exception exc)
             {
-                _logger.LogError(exc.Message + Environment.NewLine + exc.StackTrace);
+                //_logger.LogError(exc.Message + Environment.NewLine + exc.StackTrace);
             }
 
         }

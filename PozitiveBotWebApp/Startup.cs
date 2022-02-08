@@ -14,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PozitiveBotWebApp.Logging;
 using System.IO;
+using Positive.SqlDbContext;
 
 namespace PozitiveBotWebApp
 {
@@ -32,7 +33,8 @@ namespace PozitiveBotWebApp
             string connection = Configuration.GetConnectionString("DefaultConnection");
 
             services
-                .AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection))
+                //.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection))
+                .AddPozitiveSqlServer(connection)
                 .AddTelegramBotClient(Configuration)
                 .AddControllersWithViews()
                 .AddNewtonsoftJson();

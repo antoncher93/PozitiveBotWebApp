@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Telegram.Bot;
+﻿using Telegram.Bot;
 using Telegram.Bot.Types;
 
-namespace PozitiveBotWebApp.Handlers.CallbackHandlers
+namespace Pozitive.Services.Handlers.CallbackHandlers
 {
     public abstract class CallbackHandler : UpdateHandler
     {
