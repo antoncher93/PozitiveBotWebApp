@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -9,12 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using PozitiveBotWebApp.Extensions;
-using PozitiveBotWebApp.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PozitiveBotWebApp.Logging;
 using System.IO;
 using Positive.SqlDbContext;
+using Pozitive.Services;
+using Pozitive.Entities.Repos;
+using Pozitive.Entities;
 
 namespace PozitiveBotWebApp
 {
@@ -31,18 +32,18 @@ namespace PozitiveBotWebApp
         public void ConfigureServices(IServiceCollection services)
         {
             string connection = Configuration.GetConnectionString("DefaultConnection");
+            string token = Configuration["Token"];
 
             services
-                //.AddDbContext<ApplicationContext>(options => options.UseSqlServer(connection))
                 .AddPozitiveSqlServer(connection)
-                .AddTelegramBotClient(Configuration)
+                .AddPositiveBotServices(token)
+                //.AddTelegramBotClient(Configuration)
                 .AddControllersWithViews()
                 .AddNewtonsoftJson();
-
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IBot bot)
         {
             var filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bot.log");
             loggerFactory
@@ -69,9 +70,12 @@ namespace PozitiveBotWebApp
 
             logger.LogInformation("Authorization");
 
-            app.UseAuthorization();
-            app.UseAuthentication();
+            //app.UseAuthorization();
+            //app.UseAuthentication();
             logger.LogInformation("Authorization End");
+
+            var url = string.Format(Configuration["Url"], @"api/message/update");
+            bot.Start(url);
 
             app.UseEndpoints(endpoints =>
             {

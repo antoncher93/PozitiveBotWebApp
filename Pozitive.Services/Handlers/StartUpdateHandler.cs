@@ -16,7 +16,7 @@ namespace Pozitive.Services.Handlers
             _persons = persons;
         }
         
-        public override async void Handle(ITelegramBotClient client, Update update)
+        public override void Handle(ITelegramBotClient client, Update update)
         {
             var entity = update.Message?.Entities?.FirstOrDefault();
             if(entity is { Type: MessageEntityType.BotCommand } 

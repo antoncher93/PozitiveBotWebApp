@@ -8,7 +8,7 @@ using Pozitive.Entities.Repos;
 
 namespace Positive.SqlDbContext.Repos
 {
-    class UserRepos : IRepository<Person>
+    public class UserRepos : IRepository<Person>
     {
         private readonly PozitiveSqlContext _db;
 

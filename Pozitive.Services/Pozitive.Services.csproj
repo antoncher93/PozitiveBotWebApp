@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Positive.SqlDbContext\Positive.SqlDbContext.csproj" />
     <ProjectReference Include="..\Pozitive.Entities\Pozitive.Entities.csproj" />
   </ItemGroup>
 

@@ -6,6 +6,7 @@ using Pozitive.Entities;
 using Pozitive.Entities.Enums;
 using Pozitive.Entities.Repos;
 using Pozitive.Services.Handlers.CallbackHandlers;
+using Pozitive.Services.Internal;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
@@ -23,7 +24,7 @@ namespace PozitiveBotWebApp.Handlers.CallbackHandlers
 
         public override string Data => Bot.EXIST_IN_CHAT_REPLY;
 
-        public override async void Execute(ITelegramBotClient client, Update update)
+        public override void Execute(ITelegramBotClient client, Update update)
         {
             var from = update.CallbackQuery.From;
             var person = _persons.FirstOrDefault(u => Equals(u.TelegramId, from.Id));

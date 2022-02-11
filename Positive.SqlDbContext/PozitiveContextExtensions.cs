@@ -14,7 +14,7 @@ namespace Positive.SqlDbContext
         public static IServiceCollection AddPozitiveSqlServer(this IServiceCollection services, string connectionString)
         {
             services.AddDbContext<PozitiveSqlContext>(options => options.UseSqlServer(connectionString));
-            services.AddScoped<IRepository<Person>, UserRepos>();
+            services.AddScoped<UserRepos>();
             return services;
         }
 

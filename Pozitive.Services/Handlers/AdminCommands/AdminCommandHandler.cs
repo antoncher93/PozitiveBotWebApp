@@ -26,8 +26,8 @@ namespace PozitiveBotWebApp.Handlers.AdminCommands
                 return false;
 
             var from = update.Message.From;
-            if (!Equals(from.Id, Bot.ROOT_ADMIN_ID))
-                return false;
+            //if (!Equals(from.Id, Bot.ROOT_ADMIN_ID))
+            //    return false;
 
             for(int i = 0; i< msg.Entities.Length; i++)
             {

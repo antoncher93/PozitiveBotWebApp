@@ -8,25 +8,23 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using Telegram.Bot.Types;
+using Pozitive.Services;
 
 namespace PozitiveBotWebApp.Controllers
 {
     public class MessageController : Controller
     {
-        private readonly ITelegramBotClient _client;
-
-        public MessageController(IServiceProvider serviceProvider)
+        private readonly IBot _bot;
+        public MessageController(IBot bot)
         {
-            _client = serviceProvider.GetService<ITelegramBotClient>();
-            Bot.Configure(serviceProvider);
-
+            _bot = bot;
         }
 
         [HttpPost]
         [Route(@"api/message/update")]
         public async Task<OkResult> Update([FromBody] Update update)
         {
-            await Bot.HandleUpdateAsync(_client, update);
+            await _bot.HandleUpdateAsync(update);
             return Ok();
         }
     }

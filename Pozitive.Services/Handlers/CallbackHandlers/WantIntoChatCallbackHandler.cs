@@ -2,6 +2,7 @@
 using Pozitive.Entities;
 using Pozitive.Entities.Enums;
 using Pozitive.Entities.Repos;
+using Pozitive.Services.Internal;
 using PozitiveBotWebApp;
 using Telegram.Bot;
 using Telegram.Bot.Types;

@@ -2,6 +2,7 @@
 using Pozitive.Entities;
 using Pozitive.Entities.Enums;
 using Pozitive.Entities.Repos;
+using Pozitive.Services.Internal;
 using PozitiveBotWebApp;
 using PozitiveBotWebApp.Handlers.CallbackHandlers;
 using Telegram.Bot;
@@ -29,26 +30,23 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
             if(!_adminService.IsAdmin(admin))
                 return;
 
-            if (long.Equals(update.CallbackQuery.From.Id, Bot.ROOT_ADMIN_ID))
-            {
-                var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
-                var id = int.Parse(mention);
-                var person = _persons.FirstOrDefault(u => Equals(u.Id, id));
-                if (person is null)
-                    return;
+            var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
+            var id = int.Parse(mention);
+            var person = _persons.FirstOrDefault(u => Equals(u.Id, id));
+            if (person is null)
+                return;
 
-                person.Status = UserStatus.Accepted;
-                _persons.Update(person);
+            person.Status = UserStatus.Accepted;
+            _persons.Update(person);
 
-                //var text = $"Подтверждение принято. Можете вступить в закрытый чат 7 корпуса ЖК Позитив по ссылке:\n" + _configuration["ChatInviteLink"];
-                //client.SendTextMessageAsync(user.ChatId, text);
+            //var text = $"Подтверждение принято. Можете вступить в закрытый чат 7 корпуса ЖК Позитив по ссылке:\n" + _configuration["ChatInviteLink"];
+            //client.SendTextMessageAsync(user.ChatId, text);
 
-                _adminService.InvitePerson(person);
+            _adminService.InvitePerson(person);
 
-                var caption = update.CallbackQuery.Message.Caption + "\nПринят!";
-                client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
-                    caption, parseMode: ParseMode.Markdown);
-            }
+            var caption = update.CallbackQuery.Message.Caption + "\nПринят!";
+            client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
+                caption, parseMode: ParseMode.Markdown);
         }
     }
 }

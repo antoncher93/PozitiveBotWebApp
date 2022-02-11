@@ -2,6 +2,7 @@
 using Pozitive.Entities;
 using Pozitive.Entities.Enums;
 using Pozitive.Entities.Repos;
+using Pozitive.Services.Internal;
 using PozitiveBotWebApp;
 using PozitiveBotWebApp.Handlers.CallbackHandlers;
 using Telegram.Bot;
@@ -14,7 +15,14 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
     {
         private readonly IAdminService _adminService;
         private readonly IRepository<Person> _persons;
+
+        
         public override string Data { get; } = Bot.REJECT_USER;
+
+        public RejectUserHandler(IAdminService adminService)
+        {
+            _adminService = adminService;
+        }
 
         public override void Execute(ITelegramBotClient client, Update update)
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Pozitive.Services.Handlers;
+using Pozitive.Services.Internal;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
