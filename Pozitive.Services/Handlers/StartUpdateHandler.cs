@@ -16,7 +16,7 @@ namespace Pozitive.Services.Handlers
             _persons = persons;
         }
         
-        public override void Handle(ITelegramBotClient client, Update update)
+        public override async void Handle(ITelegramBotClient client, Update update)
         {
             var entity = update.Message?.Entities?.FirstOrDefault();
             if(entity is { Type: MessageEntityType.BotCommand } 
@@ -26,7 +26,7 @@ namespace Pozitive.Services.Handlers
                 var person = _persons.FirstOrDefault(u => Equals(u.TelegramId, @from.Id));
                 if (person is null)
                 {
-                    person = new Pozitive.Entities.Person()
+                    person = new Person()
                     {
                         TelegramId = @from.Id,
                         FirstName = @from.FirstName,
@@ -38,6 +38,8 @@ namespace Pozitive.Services.Handlers
 
                     _persons.Add(person);
                 }
+
+                await client.SendTextMessageAsync(update.Message.Chat.Id, "Стартуем!", replyToMessageId: update.Message.MessageId);
             }
             else base.Handle(client, update);
         }
