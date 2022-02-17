@@ -23,7 +23,7 @@ namespace Pozitive.Services.Handlers
                && string.Equals(update.Message.EntityValues?.First(), "/start"))
             {
                 var from = update.Message.From;
-                var person = _persons.FirstOrDefault(u => Equals(u.TelegramId, @from.Id));
+                var person = _persons.GetAll().FirstOrDefault(u => Equals(u.TelegramId, @from.Id));
                 if (person is null)
                 {
                     person = new Person()

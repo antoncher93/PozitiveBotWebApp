@@ -25,13 +25,13 @@ namespace Pozitive.Services.Handlers
 
             if (message != null)
             {
-                var user = _users.FirstOrDefault(u => long.Equals(u.TelegramId, message.From.Id));
+                var user = _users.GetAll().FirstOrDefault(u => long.Equals(u.TelegramId, message.From.Id));
                 if(user!= null && user.Status == UserStatus.WaitingPhotoOfDoc)
                 {
                     if (message.Photo != null && message.Photo.Any())
                     {
                         var photo = message.Photo[0];
-                        var person = _users.FirstOrDefault(p => long.Equals(p.TelegramId, message.From.Id));
+                        var person = _users.GetAll().FirstOrDefault(p => long.Equals(p.TelegramId, message.From.Id));
                         _adminService.ForwardDocumentToAdmin(person, photo.FileId);
 
                     }

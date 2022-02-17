@@ -27,7 +27,8 @@ namespace PozitiveBotWebApp.Handlers.CallbackHandlers
         public override void Execute(ITelegramBotClient client, Update update)
         {
             var from = update.CallbackQuery.From;
-            var person = _persons.FirstOrDefault(u => Equals(u.TelegramId, from.Id));
+            var person = _persons.GetAll()
+                .FirstOrDefault(u => Equals(u.TelegramId, from.Id));
 
             if (person is null)
                 return;

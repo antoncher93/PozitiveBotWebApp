@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using Pozitive.Entities;
 using PozitiveBotWebApp;
 using Telegram.Bot;
@@ -14,17 +15,17 @@ namespace Pozitive.Services.Internal
     class AdminService : IAdminService
     {
         private readonly ITelegramBotClient _client;
-        private long _adminChatId;
-        private long _mainChatId;
+        private readonly IConfiguration _configuration;
 
-        public AdminService(ITelegramBotClient client)
+        public AdminService(ITelegramBotClient client, IConfiguration configuration)
         {
             _client = client;
+            _configuration = configuration;
         }
 
-        public bool IsAdmin(Person person)
+        public bool IsAdmin(User user, Chat chat)
         {
-            var member = _client.GetChatMemberAsync(_mainChatId, person.TelegramId).Result;
+            var member = _client.GetChatMemberAsync(chat, user.Id).Result;
             return member.Status == ChatMemberStatus.Creator
                    && member.Status == ChatMemberStatus.Administrator;
         }
@@ -34,9 +35,10 @@ namespace Pozitive.Services.Internal
             throw new NotImplementedException();
         }
 
-        public void ReloadChat(long chatId)
+        public async void ReloadChat(long chatId)
         {
-            throw new NotImplementedException();
+            _configuration["MainChatId"] = chatId.ToString();
+            await _client.SendTextMessageAsync(chatId, "Настройка завершена.");
         }
 
         public void DeclinePerson(User admin, long userId)
@@ -58,7 +60,8 @@ namespace Pozitive.Services.Internal
             var telegramId = person.TelegramId;
             var mention = "[" + person.Id + "](tg://user?id=" + telegramId + ")";
             var text = $"Пользователь {mention} хочет в чат";
-            client.SendPhotoAsync(_adminChatId, photoFileId , text, ParseMode.Markdown, replyMarkup: keyboard);
+            var adminChatId = _configuration.GetValue<long>("AdminChatId");
+            client.SendPhotoAsync(adminChatId, photoFileId , text, ParseMode.Markdown, replyMarkup: keyboard);
 
         }
     }

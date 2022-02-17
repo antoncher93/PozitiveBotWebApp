@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Pozitive.Entities;
 using Pozitive.Entities.Repos;
@@ -19,13 +20,13 @@ namespace Positive.SqlDbContext.Repos
 
         public void Dispose()
         {
-            _db.Dispose();
+            //_db.Dispose();
         }
 
-        public async void Add(Person item)
+        public void Add(Person item)
         {
             _db.Users.Add(item);
-            await _db.SaveChangesAsync();
+            _db.SaveChanges();
         }
 
         public Person GetItem(int id)
@@ -33,34 +34,34 @@ namespace Positive.SqlDbContext.Repos
             return _db.Users.Find(id);
         }
 
-        public async void Update(Person item)
+        public void Update(Person item)
         {
-            var user = await _db.Users.FindAsync(item.Id);
+            var user = _db.Users.FindAsync(item.Id);
             if (user != null)
             {
-                _db.Update(user);
-                await _db.SaveChangesAsync();
+                _db.Entry(item).State = EntityState.Modified;
+                _db.SaveChanges();
             }
         }
 
-        public async void Delete(int id)
+        public void Delete(int id)
         {
-            var user = await _db.Users.FindAsync(id);
+            var user = _db.Users.Find(id);
             if (user != null)
             {
                 _db.Update(user);
-                await _db.SaveChangesAsync();
+                _db.SaveChangesAsync();
             }
         }
 
-        public IEnumerator<Person> GetEnumerator()
+        public async Task<IEnumerable<Person>> GetAllAsync()
         {
-            return ((IEnumerable<Person>)_db.Users).GetEnumerator();
+            return await _db.Users.ToListAsync();
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public IEnumerable<Person> GetAll()
         {
-            return GetEnumerator();
+            return _db.Users.ToListAsync().Result;
         }
     }
 }

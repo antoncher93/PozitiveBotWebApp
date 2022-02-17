@@ -29,7 +29,8 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
             var admin = update.CallbackQuery.From;
             var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
             var personId = int.Parse(mention);
-            var person = _persons.FirstOrDefault(p => Equals(personId, p.Id));
+            var person = _persons.GetAll()
+                .FirstOrDefault(p => Equals(personId, p.Id));
             if(person is null)
                 return;
 

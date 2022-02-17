@@ -8,7 +8,7 @@ namespace Pozitive.Services
 {
     public interface IAdminService
     {
-        bool IsAdmin(Person person);
+        bool IsAdmin(User user, Chat chat);
         void ForwardDocumentToAdmin(Person person, string photoFileId);
         void ReloadChat(long chatId);
         void DeclinePerson(User admin, long userId);

@@ -23,16 +23,17 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
 
         public override string Data => Bot.APPROVE_USER;
 
-        public override void Execute(ITelegramBotClient client, Update update)
+        public override async void Execute(ITelegramBotClient client, Update update)
         {
             var from = update.CallbackQuery.From;
-            var admin = _persons.FirstOrDefault(u => long.Equals(u.TelegramId, from.Id));
-            if(!_adminService.IsAdmin(admin))
+            var chat = update.CallbackQuery.Message.Chat;
+            //var admin = _persons.FirstOrDefault(u => long.Equals(u.TelegramId, from.Id));
+            if (!_adminService.IsAdmin(from, chat))
                 return;
 
             var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
             var id = int.Parse(mention);
-            var person = _persons.FirstOrDefault(u => Equals(u.Id, id));
+            var person = _persons.GetAll().FirstOrDefault(u => Equals(u.Id, id));
             if (person is null)
                 return;
 
@@ -45,7 +46,7 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
             _adminService.InvitePerson(person);
 
             var caption = update.CallbackQuery.Message.Caption + "\nПринят!";
-            client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
+            await client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
                 caption, parseMode: ParseMode.Markdown);
         }
     }

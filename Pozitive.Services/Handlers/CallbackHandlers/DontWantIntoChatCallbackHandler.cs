@@ -24,7 +24,8 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
         {
             var msg = update.CallbackQuery.Message;
             var from = update.CallbackQuery.From;
-            var person = _persons.FirstOrDefault(u => Equals(from.Id, u.TelegramId));
+            var person = _persons.GetAll()
+                .FirstOrDefault(u => Equals(from.Id, u.TelegramId));
 
             if(person != null)
             {

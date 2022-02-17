@@ -7,6 +7,7 @@ using Positive.SqlDbContext.Repos;
 using Pozitive.Entities;
 using Pozitive.Entities.Repos;
 using Pozitive.Services.Handlers;
+using Pozitive.Services.Handlers.AdminCommands;
 using Pozitive.Services.Handlers.CallbackHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -33,14 +34,15 @@ namespace Pozitive.Services.Internal
 
         private readonly ITelegramBotClient _client;
         private UpdateHandler _rootUpdateHandler;
-        private readonly IServiceProvider _serviceProvider;
+        private UpdateHandler _botCommandHandler;
         private readonly IRepository<Person> _persons;
+        private readonly IAdminService _adminService;
 
-        public Bot(IServiceProvider serviceProvider, UserRepos persons)
+        public Bot(ITelegramBotClient client, IAdminService adminService, UserRepos persons)
         {
-            _serviceProvider = serviceProvider;
-            _client = serviceProvider.GetService<ITelegramBotClient>();
+            _client = client;
             _persons = persons;
+            _adminService = adminService;
 
             _ConfigureHandlers();
         }
@@ -52,14 +54,20 @@ namespace Pozitive.Services.Internal
 
         private void _ConfigureHandlers()
         {
-            _rootUpdateHandler = new StartUpdateHandler(_persons);
+            _botCommandHandler = new StartUpdateHandler(_persons);
+            _botCommandHandler.SetNext(new ReloadChatUpdateHandler(_adminService, _persons))
+                .SetNext(new SendToAllAdminCommand(_adminService, _persons));
+
+            _rootUpdateHandler = new RootUpdateHandler();
             //_rootUpdateHandler
-            //    .SetNext(new WantIntoChatCallbackHandler(appContext))
-            //    .SetNext(new ReloadAdminCommandHandler(appContext, configuration))
-            //    .SetNext(new ReloadChatUpdateHandler(configuration))
-            //    .SetNext(new PhotoHandler(appContext, configuration))
-            //    .SetNext(new ApproveCalbackHandler(configuration, appContext))
-            //    .SetNext(new RejectUserHandler(configuration, appContext));
+            //    .SetNext()
+            ////    .SetNext(new WantIntoChatCallbackHandler(appContext))
+            ////    .SetNext(new ReloadAdminCommandHandler(appContext, configuration))
+            //    .SetNext(new MessageToReloadChatHandler(_persons))
+                
+            ////    .SetNext(new PhotoHandler(appContext, configuration))
+            ////    .SetNext(new ApproveCalbackHandler(configuration, appContext))
+            ////    .SetNext(new RejectUserHandler(configuration, appContext));
         }
 
         public void HandleUpdate(Update update)
@@ -69,7 +77,16 @@ namespace Pozitive.Services.Internal
 
             try
             {
-                _rootUpdateHandler.Handle(_client, update);
+                var msg = update.Message;
+                if(msg != null && msg.Entities != null && msg.Entities.Any(e => e.Type == MessageEntityType.BotCommand))
+                {
+                    _botCommandHandler.Handle(_client, update);
+                }
+                else
+                {
+                    _rootUpdateHandler.Handle(_client, update);
+                }
+
             }
             catch (Exception exc)
             {
