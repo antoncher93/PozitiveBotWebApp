@@ -45,9 +45,8 @@ namespace PozitiveBotWebApp
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IBot bot)
         {
-            var filename = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bot.log");
             loggerFactory
-                .AddFile(filename);
+                .AddFile("bot.log");
 
             var logger = loggerFactory.CreateLogger("FileLogger");
 
