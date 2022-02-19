@@ -69,8 +69,8 @@ namespace PozitiveBotWebApp
 
             logger.LogInformation("Authorization");
 
-            //app.UseAuthorization();
-            //app.UseAuthentication();
+            app.UseAuthorization();
+            app.UseAuthentication();
             logger.LogInformation("Authorization End");
 
             var url = string.Format(Configuration["Url"], @"api/message/update");

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Positive.SqlDbContext.Repos;
 using Pozitive.Entities;
 using Pozitive.Entities.Repos;
@@ -37,19 +38,30 @@ namespace Pozitive.Services.Internal
         private UpdateHandler _botCommandHandler;
         private readonly IRepository<Person> _persons;
         private readonly IAdminService _adminService;
+        private readonly ILogger _logger;
 
-        public Bot(ITelegramBotClient client, IAdminService adminService, UserRepos persons)
+        public Bot(ITelegramBotClient client, IAdminService adminService, UserRepos persons, ILoggerFactory loggerFactory)
         {
             _client = client;
             _persons = persons;
             _adminService = adminService;
+            _logger = loggerFactory.CreateLogger<Bot>();
 
             _ConfigureHandlers();
         }
 
         public void Start(string hook)
         {
-            _client.SetWebhookAsync(hook, allowedUpdates: new[] { UpdateType.CallbackQuery, UpdateType.Message });
+            try
+            {
+                _client.SetWebhookAsync(hook, allowedUpdates: new[] { UpdateType.CallbackQuery, UpdateType.Message });
+                _logger.LogInformation($"Bot started at webhook {hook}");
+            }
+            catch(Exception exc)
+            {
+                _logger.LogError($"Error of SetWebhookAsync. {exc.Message}");
+            }
+            
         }
 
         private void _ConfigureHandlers()
