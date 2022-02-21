@@ -16,29 +16,17 @@ namespace PozitiveBotWebApp.Controllers
     {
         private readonly IBot _bot;
         private readonly ILogger _logger;
-        private readonly IConfiguration _config;
 
-        public MessageController(IBot bot, ILoggerFactory loggerFactory, IConfiguration config)
+        public MessageController(IBot bot, ILoggerFactory loggerFactory)
         {
             _bot = bot;
             _logger = loggerFactory.CreateLogger<MessageController>();
-            _config = config;
-        }
-
-        [HttpGet]
-        [Route(@"api/message/start")]
-        public string Start()
-        {
-            var url = string.Format(_config["Url"], @"api/message/update");
-            _bot.Start(url);
-            return "Bot Started";
         }
 
         [HttpPost]
         [Route(@"api/message/update")]
         public async Task<OkResult> Update([FromBody] Update update)
         {
-            _logger.LogInformation("Handle update");
             await _bot.HandleUpdateAsync(update);
             return Ok();
         }
