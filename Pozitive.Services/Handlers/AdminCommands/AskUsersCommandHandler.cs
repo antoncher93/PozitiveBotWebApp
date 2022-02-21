@@ -27,7 +27,8 @@ namespace Pozitive.Services.Handlers.AdminCommands
 
             foreach (var person in _persons.GetAll())
             {
-                client.SendTextMessageAsync(person.ChatId, "Получилось ли попасть в закрытый чат 7 корпуса ЖК Позитив?", replyMarkup: keyboard);
+                if(!_adminService.IsChatMember(person.TelegramId))
+                    client.SendTextMessageAsync(person.ChatId, "Получилось ли попасть в закрытый чат 7 корпуса ЖК Позитив?", replyMarkup: keyboard);
             }
         }
     }

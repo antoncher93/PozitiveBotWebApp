@@ -13,5 +13,6 @@ namespace Pozitive.Services
         void ReloadChat(long chatId);
         void DeclinePerson(User admin, long userId);
         void InvitePerson(Person person);
+        bool IsChatMember(long telegramId);
     }
 }

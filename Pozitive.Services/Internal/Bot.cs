@@ -66,10 +66,9 @@ namespace Pozitive.Services.Internal
 
         private void _ConfigureHandlers()
         {
-            _botCommandHandler = new StartUpdateHandler(_persons);
+            _botCommandHandler = new StartUpdateHandler(_adminService, _persons);
             _botCommandHandler.SetNext(new ReloadChatUpdateHandler(_adminService, _persons))
                 .SetNext(new SendToAllAdminCommand(_adminService, _persons));
-
             _rootUpdateHandler = new RootUpdateHandler();
             //_rootUpdateHandler
             //    .SetNext()

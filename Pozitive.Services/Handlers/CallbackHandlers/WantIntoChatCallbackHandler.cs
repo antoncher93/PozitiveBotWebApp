@@ -30,6 +30,7 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
             var from = update.CallbackQuery.From;
             var person = _persons.GetAll()
                 .FirstOrDefault(u => long.Equals(u.TelegramId, from.Id));
+
             if (person is null)
             {
                 person = new Person()
@@ -50,8 +51,12 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
                 person.FirstName = from.FirstName;
                 person.LastName = from.LastName;
                 person.UserName = from.Username;
-                _persons.Update(person);
+                
             }
+
+            person.DialogStatus = "wait_photo";
+            _persons.Update(person);
+
             client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, Text);
             client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, Text2);
         }

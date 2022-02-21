@@ -32,7 +32,15 @@ namespace Pozitive.Services.Internal
 
         public void ForwardDocumentToAdmin(Person person, string photoFileId)
         {
-            throw new NotImplementedException();
+            var buttonYes = InlineKeyboardButton.WithCallbackData("Принять", Bot.APPROVE_USER);
+            var buttonNo = InlineKeyboardButton.WithCallbackData("Отклонить", Bot.REJECT_USER);
+            var keyboard = new InlineKeyboardMarkup(new[] { buttonYes, buttonNo });
+
+            var telegramId = person.TelegramId;
+            var mention = "[" + person.Id + "](tg://user?id=" + telegramId + ")";
+            var text = $"Пользователь {mention} хочет в чат";
+            var adminChatId = _configuration.GetValue<long>("AdminChatId");
+            _client.SendPhotoAsync(adminChatId, photoFileId, text, ParseMode.Markdown, replyMarkup: keyboard);
         }
 
         public async void ReloadChat(long chatId)
@@ -43,26 +51,18 @@ namespace Pozitive.Services.Internal
 
         public void DeclinePerson(User admin, long userId)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void InvitePerson(Person person)
         {
-            throw new NotImplementedException();
+            
         }
 
-        public void ForwardDocumentToAdmin(ITelegramBotClient client, Person person, string photoFileId)
+        public bool IsChatMember(long telegramId)
         {
-            var buttonYes = InlineKeyboardButton.WithCallbackData("Принять", Bot.APPROVE_USER);
-            var buttonNo = InlineKeyboardButton.WithCallbackData("Отклонить", Bot.REJECT_USER);
-            var keyboard = new InlineKeyboardMarkup(new[] { buttonYes, buttonNo });
-
-            var telegramId = person.TelegramId;
-            var mention = "[" + person.Id + "](tg://user?id=" + telegramId + ")";
-            var text = $"Пользователь {mention} хочет в чат";
-            var adminChatId = _configuration.GetValue<long>("AdminChatId");
-            client.SendPhotoAsync(adminChatId, photoFileId , text, ParseMode.Markdown, replyMarkup: keyboard);
-
+            var member = _client.GetChatMemberAsync(_configuration.GetValue<long>("MainChatId"), telegramId).Result;
+            return member.Status != ChatMemberStatus.Left && member.Status != ChatMemberStatus.Kicked;
         }
     }
 }
