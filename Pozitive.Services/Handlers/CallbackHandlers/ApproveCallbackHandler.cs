@@ -37,12 +37,11 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
 
             var mention = update.CallbackQuery.Message.CaptionEntityValues.ElementAt(0);
             var id = int.Parse(mention);
-            var photo = msg.Photo;
             _adminService.InvitePerson(id, msg.Photo[msg.Photo.Length - 1]);
 
-            //var caption = update.CallbackQuery.Message.Caption + "\nПринят!";
-            //client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
-            //    caption, parseMode: ParseMode.Markdown);
+            var caption = update.CallbackQuery.Message.Caption + "\nПринят!";
+            client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
+                caption, parseMode: ParseMode.Markdown);
 
 
         }
