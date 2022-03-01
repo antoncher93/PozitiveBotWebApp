@@ -57,9 +57,13 @@ namespace Pozitive.Services.Internal
             await _client.SendTextMessageAsync(chat.Id, "Настройка завершена.");
         }
 
-        public void DeclinePerson(User admin, long userId)
+        public void DeclinePerson(User admin, Person person)
         {
-            
+            if(IsAdmin(admin.Id))
+            {
+                _client.SendTextMessageAsync(person.ChatId, "Отправленный документ не подходит. " +
+                    "Нужен документ, на котором будут ФИО, адресс и номер договора с застройщиком.");
+            }
         }
 
         public void InvitePerson(int personId, PhotoSize photo)

@@ -1,4 +1,5 @@
 ﻿using Pozitive.Entities;
+using Pozitive.Entities.Repos;
 using Telegram.Bot;
 using Telegram.Bot.Types;
 
@@ -17,11 +18,11 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
             _next = next;
             return _next;
         }
-        public static CallbackHandler Create(IBot bot, IAdminService adminService)
+        public static CallbackHandler Create(IBot bot, IAdminService adminService, IRepository<Person> persons)
         {
             var head = new WantIntoChatCallbackHandler(bot);
             head.SetNext(new ApproveCallbackHandler(adminService))
-                .SetNext(new RejectUserHandler(adminService));
+                .SetNext(new RejectUserHandler(adminService, persons));
             return head;
         }
     }

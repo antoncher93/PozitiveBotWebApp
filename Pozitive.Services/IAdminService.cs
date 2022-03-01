@@ -11,7 +11,7 @@ namespace Pozitive.Services
         bool IsAdmin(long telegramId);
         void ForwardDocumentToAdmin(Person person, string photoFileId);
         void ReloadChat(Chat chat);
-        void DeclinePerson(User admin, long userId);
+        void DeclinePerson(User admin, Person person);
         void InvitePerson(int personId, PhotoSize photo);
         bool IsChatMember(long telegramId);
     }

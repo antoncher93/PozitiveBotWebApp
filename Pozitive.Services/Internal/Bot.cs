@@ -78,7 +78,7 @@ namespace Pozitive.Services.Internal
 
         private void _ConfigureHandlers()
         {
-            _callbackHandler = CallbackHandler.Create(this, _adminService);
+            _callbackHandler = CallbackHandler.Create(this, _adminService, _persons);
             _botCommandHandler = BotCommandHandler.Create(_adminService, _persons, _documents);
             _rootUpdateHandler = UpdateHandler.Create(_adminService, _persons);
         }

@@ -18,9 +18,10 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
         
         public override string Data { get; } = Bot.REJECT_USER;
 
-        public RejectUserHandler(IAdminService adminService)
+        public RejectUserHandler(IAdminService adminService, IRepository<Person> persons)
         {
             _adminService = adminService;
+            _persons = persons;
         }
 
         
@@ -36,7 +37,11 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
                 if (person is null)
                     return;
 
-                _adminService.DeclinePerson(admin, person.TelegramId);
+                _adminService.DeclinePerson(admin, person);
+
+                var caption = update.CallbackQuery.Message.Caption + "\nОТКЛОНЕН!";
+                client.EditMessageCaptionAsync(update.CallbackQuery.Message.Chat.Id, update.CallbackQuery.Message.MessageId,
+                    caption, parseMode: ParseMode.Markdown);
             }
             else base.Handle(client, update);
           
