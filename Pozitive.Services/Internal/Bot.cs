@@ -6,9 +6,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Positive.SqlDbContext.Repos;
 using Pozitive.Entities;
+using Pozitive.Entities.Enums;
 using Pozitive.Entities.Repos;
 using Pozitive.Services.Handlers;
 using Pozitive.Services.Handlers.AdminCommands;
+using Pozitive.Services.Handlers.BotCommands;
 using Pozitive.Services.Handlers.CallbackHandlers;
 using Telegram.Bot;
 using Telegram.Bot.Types;
@@ -33,17 +35,28 @@ namespace Pozitive.Services.Internal
         internal const string APPROVE_USER = "ACCEPT_USER";
         internal const string REJECT_USER = "REJECT_USER";
 
+        private const string InviteText1 = "Хорошо, для того, чтобы стать участником закрытого чата 7 корпуса ЖК Позитив, необходимо подтвердить свою принадлежность. "
+                                   + "Для этого пришлите мне фото документа, подтверждающего собственость или участие в долевом "
+                                   + "строительстве (фото первой страницы ДДУ или т.п.)";
+        private const string InviteText2 = "Отправьте фото первой страницы ДДУ или фото акта приемки УК";
+
         private readonly ITelegramBotClient _client;
         private UpdateHandler _rootUpdateHandler;
-        private UpdateHandler _botCommandHandler;
+        private BotCommandHandler _botCommandHandler;
+        private CallbackHandler _callbackHandler;
         private readonly IRepository<Person> _persons;
+        private readonly IRepository<Entities.Document> _documents;
         private readonly IAdminService _adminService;
         private readonly ILogger _logger;
 
-        public Bot(ITelegramBotClient client, IAdminService adminService, UserRepos persons, ILoggerFactory loggerFactory)
+        public Bot(ITelegramBotClient client, IAdminService adminService, 
+            UserRepos persons, 
+            DocumentRepos documents,
+            ILoggerFactory loggerFactory)
         {
             _client = client;
             _persons = persons;
+            _documents = documents;
             _adminService = adminService;
             _logger = loggerFactory.CreateLogger<Bot>();
 
@@ -61,24 +74,13 @@ namespace Pozitive.Services.Internal
             {
                 _logger.LogError($"Error of SetWebhookAsync. {exc.Message}");
             }
-            
         }
 
         private void _ConfigureHandlers()
         {
-            _botCommandHandler = new StartUpdateHandler(_adminService, _persons);
-            _botCommandHandler.SetNext(new ReloadChatUpdateHandler(_adminService, _persons))
-                .SetNext(new SendToAllAdminCommand(_adminService, _persons));
-            _rootUpdateHandler = new RootUpdateHandler();
-            //_rootUpdateHandler
-            //    .SetNext()
-            ////    .SetNext(new WantIntoChatCallbackHandler(appContext))
-            ////    .SetNext(new ReloadAdminCommandHandler(appContext, configuration))
-            //    .SetNext(new MessageToReloadChatHandler(_persons))
-                
-            ////    .SetNext(new PhotoHandler(appContext, configuration))
-            ////    .SetNext(new ApproveCalbackHandler(configuration, appContext))
-            ////    .SetNext(new RejectUserHandler(configuration, appContext));
+            _callbackHandler = CallbackHandler.Create(this, _adminService);
+            _botCommandHandler = BotCommandHandler.Create(_adminService, _persons, _documents);
+            _rootUpdateHandler = UpdateHandler.Create(_adminService, _persons);
         }
 
         public void HandleUpdate(Update update)
@@ -93,15 +95,18 @@ namespace Pozitive.Services.Internal
                 {
                     _botCommandHandler.Handle(_client, update);
                 }
+                else if(update.Type == UpdateType.CallbackQuery)
+                {
+                    _callbackHandler.Handle(_client, update);
+                }
                 else
                 {
-                    _rootUpdateHandler.Handle(_client, update);
+                    _rootUpdateHandler?.Handle(_client, update);
                 }
-
             }
             catch (Exception exc)
             {
-                //_logger.LogError(exc.Message + Environment.NewLine + exc.StackTrace);
+                _logger.LogError(exc.Message + Environment.NewLine + exc.StackTrace);
             }
 
         }
@@ -117,6 +122,18 @@ namespace Pozitive.Services.Internal
             var button = InlineKeyboardButton.WithCallbackData("Да", Bot.WANT_INTO_CHAT_CALLBACK_Q);
             var keyboard = new InlineKeyboardMarkup(new[] { button });
             await client.SendTextMessageAsync(chatId, Text, ParseMode.Markdown, replyMarkup: keyboard);
+        }
+
+        public void BeginInvite(long userId)
+        {
+            var person = _persons.GetAll()
+                .FirstOrDefault(u => long.Equals(u.TelegramId, userId));
+
+            person.Status = UserStatus.WaitingPhotoOfDoc;
+            _persons.Update(person);
+
+            _client.SendTextMessageAsync(person.ChatId, InviteText1);
+            _client.SendTextMessageAsync(person.ChatId, InviteText2);
         }
     }
 }

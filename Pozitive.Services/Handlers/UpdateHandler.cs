@@ -1,4 +1,6 @@
-﻿using Telegram.Bot;
+﻿using Pozitive.Entities;
+using Pozitive.Entities.Repos;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 
 namespace Pozitive.Services.Handlers
@@ -16,6 +18,13 @@ namespace Pozitive.Services.Handlers
         public virtual void Handle(ITelegramBotClient client, Update update)
         {
             _next?.Handle(client, update);
+        }
+
+        public static UpdateHandler Create(IAdminService adminService, IRepository<Person> persons)
+        {
+            var tail = new PhotoHandler(adminService, persons);
+
+            return tail;
         }
     }
 }

@@ -39,7 +39,7 @@ namespace Pozitive.Services.Handlers.AdminCommands
             var person = _persons.GetAll()
                 .FirstOrDefault(p => long.Equals(p.TelegramId, msg.From.Id));
 
-            if (_adminService.IsAdmin(msg.From, msg.Chat))
+            if (_adminService.IsAdmin(msg.From.Id))
                 return false;
 
             for (int i = 0; i< msg.Entities.Length; i++)

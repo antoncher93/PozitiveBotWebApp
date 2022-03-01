@@ -16,6 +16,7 @@ namespace Positive.SqlDbContext
         {
             services.AddDbContext<PozitiveSqlContext>(options => options.UseSqlServer(connectionString));
             services.AddScoped<UserRepos>();
+            services.AddScoped<DocumentRepos>();
             return services;
         }
 

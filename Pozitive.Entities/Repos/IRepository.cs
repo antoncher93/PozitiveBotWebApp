@@ -9,7 +9,7 @@ namespace Pozitive.Entities.Repos
     {
         void Add(T item);
         T GetItem(int id);
-        IEnumerable<Person> GetAll();
+        IEnumerable<T> GetAll();
         void Update(T item);
         void Delete(int id);
     }

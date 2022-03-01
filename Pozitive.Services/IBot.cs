@@ -11,5 +11,6 @@ namespace Pozitive.Services
         void Start(string baseUrl);
         void HandleUpdate(Update update);
         Task HandleUpdateAsync(Update update);
+        void BeginInvite(long userId);
     }
 }

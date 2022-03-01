@@ -8,6 +8,7 @@ namespace Positive.SqlDbContext
     public sealed class PozitiveSqlContext : DbContext
     {
         public DbSet<Person> Users { get; set; }
+        public DbSet<Document> Documents { get; set; }
 
         public PozitiveSqlContext(DbContextOptions<PozitiveSqlContext> options) : base(options)
         {

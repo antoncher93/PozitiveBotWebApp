@@ -8,11 +8,11 @@ namespace Pozitive.Services
 {
     public interface IAdminService
     {
-        bool IsAdmin(User user, Chat chat);
+        bool IsAdmin(long telegramId);
         void ForwardDocumentToAdmin(Person person, string photoFileId);
-        void ReloadChat(long chatId);
+        void ReloadChat(Chat chat);
         void DeclinePerson(User admin, long userId);
-        void InvitePerson(Person person);
+        void InvitePerson(int personId, PhotoSize photo);
         bool IsChatMember(long telegramId);
     }
 }

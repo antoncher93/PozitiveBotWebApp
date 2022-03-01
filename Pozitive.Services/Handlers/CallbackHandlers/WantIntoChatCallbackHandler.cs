@@ -11,54 +11,24 @@ namespace Pozitive.Services.Handlers.CallbackHandlers
 {
     public class WantIntoChatCallbackHandler : CallbackHandler
     {
-        private readonly IRepository<Person> _persons;
-
-        private const string Text = "Хорошо, для того, чтобы стать участником закрытого чата 7 корпуса ЖК Позитив, необходимо подтвердить свою принадлежность. "
-                                    + "Для этого пришлите мне фото документа, подтверждающего собственость или участие в долевом "
-                                    + "строительстве (фото первой страницы ДДУ или т.п.)";
-        private const string Text2 = "Отправьте фото первой страницы ДДУ или фото акта приемки УК";
+        private readonly IBot _bot;
 
         public override string Data => Bot.WANT_INTO_CHAT_CALLBACK_Q;
 
-        public WantIntoChatCallbackHandler(IRepository<Person> persons)
+        public WantIntoChatCallbackHandler(IBot bot)
         {
-            _persons = persons; 
+            _bot = bot;
         }
 
-        public override void Execute(ITelegramBotClient client, Update update)
+        public override void Handle(ITelegramBotClient client, Update update)
         {
-            var from = update.CallbackQuery.From;
-            var person = _persons.GetAll()
-                .FirstOrDefault(u => long.Equals(u.TelegramId, from.Id));
-
-            if (person is null)
+            if(string.Equals(update.CallbackQuery.Data, Bot.WANT_INTO_CHAT_CALLBACK_Q))
             {
-                person = new Person()
-                {
-                    Status = UserStatus.WaitingPhotoOfDoc,
-                    TelegramId = from.Id,
-                    ChatId = update.CallbackQuery.Message.Chat.Id,
-                    FirstName = from.FirstName,
-                    LastName = from.LastName,
-                    UserName = from.Username
-                };
-                _persons.Add(person);
-            }
-            else
-            {
-                person.Status = UserStatus.WaitingPhotoOfDoc;
-                person.ChatId = update.CallbackQuery.Message.Chat.Id;
-                person.FirstName = from.FirstName;
-                person.LastName = from.LastName;
-                person.UserName = from.Username;
-                
-            }
+                var from = update.CallbackQuery.From;
 
-            person.DialogStatus = "wait_photo";
-            _persons.Update(person);
-
-            client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, Text);
-            client.SendTextMessageAsync(update.CallbackQuery.Message.Chat.Id, Text2);
+                _bot.BeginInvite(from.Id);
+            }
+            else base.Handle(client, update);
         }
     }
 }

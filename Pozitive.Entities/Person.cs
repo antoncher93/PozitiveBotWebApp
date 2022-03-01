@@ -12,5 +12,6 @@ namespace Pozitive.Entities
         public string LastName { get; set; }
         public string UserName { get; set; }
         public string DialogStatus { get; set; }
+        public string InviteLink { get; set; }
     }
 }
